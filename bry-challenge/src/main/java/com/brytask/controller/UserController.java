@@ -1,6 +1,8 @@
 package com.brytask.controller;
 
 import com.brytask.model.User;
+import com.brytask.dto.UserUpdateDto;
+import com.brytask.util.DataMaskingUtil;
 import com.brytask.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ public class UserController {
   @GetMapping
   public ResponseEntity<List<User>> getAllUsers() {
     List<User> users = userService.findAllUsers();
+    users.forEach(user -> user.setCpf(DataMaskingUtil.maskCpf(user.getCpf())));
     return ResponseEntity.ok(users);
   }
 
@@ -33,19 +36,15 @@ public class UserController {
   // POST create a new user
   @PostMapping
   public ResponseEntity<User> createUser(@RequestBody User user) {
-    User savedUser = userService.saveOrUpdateUser(user);
+    User savedUser = userService.saveUser(user);
     return ResponseEntity.ok(savedUser);
   }
 
   // PUT update user
   @PutMapping("/{id}")
-  public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
-    return userService.findUserById(id)
-        .map(existingUser -> {
-          user.setId(id);
-          User updatedUser = userService.saveOrUpdateUser(user);
-          return ResponseEntity.ok(updatedUser);
-        })
+  public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserUpdateDto userUpdateDto) {
+    return userService.updateUser(id, userUpdateDto)
+        .map(updatedUser -> ResponseEntity.ok(updatedUser))
         .orElseGet(() -> ResponseEntity.notFound().build());
   }
 

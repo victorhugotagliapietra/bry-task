@@ -15,7 +15,7 @@ public class User {
   @Column(nullable = false, length = 100)
   private String name;
 
-  @Column(nullable = false, unique = true, length = 20)
+  @Column(nullable = false, unique = true, length = 11)
   private String cpf;
 
   @Column(nullable = false, length = 255)
@@ -35,7 +35,7 @@ public class User {
   }
 
   /*
-   * Getters e Setters
+   * Getters and Setters
    */
   public Long getId() {
     return id;

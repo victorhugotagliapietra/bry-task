@@ -1,6 +1,7 @@
 package com.brytask.service;
 
 import com.brytask.model.User;
+import com.brytask.dto.UserUpdateDto;
 import com.brytask.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,8 +25,21 @@ public class UserService {
     return userRepository.findById(id);
   }
 
-  // Save or Update User
-  public User saveOrUpdateUser(User user) {
+  // Update User
+  public Optional<User> updateUser(Long id, UserUpdateDto userUpdateDto) {
+    return userRepository.findById(id)
+        .map(existingUser -> {
+          existingUser.setName(userUpdateDto.getName());
+          existingUser.setPhoto(userUpdateDto.getPhoto());
+          return userRepository.save(existingUser);
+        });
+  }
+
+  // Save User
+  public User saveUser(User user) {
+    if (user.getCpf() == null || user.getCpf().length() != 11) {
+      throw new IllegalArgumentException("the CPF must have exactly 11 characters.");
+    }
     return userRepository.save(user);
   }
 
